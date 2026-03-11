@@ -21,11 +21,23 @@
     <ClCompile Include="gameFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
+=======
+    <ClCompile Include="Pixie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+>>>>>>> 8e4678e (Add project files.)
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="Pixie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+>>>>>>> 8e4678e (Add project files.)
   </ItemGroup>
   <ItemGroup>
     <Image Include="alien.bmp">

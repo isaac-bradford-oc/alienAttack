@@ -132,10 +132,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gameHeader.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="Pixie.h" />
+>>>>>>> 8e4678e (Add project files.)
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameFunctions.cpp" />
+<<<<<<< HEAD
+=======
+    <ClCompile Include="Pixie.cpp" />
+>>>>>>> 8e4678e (Add project files.)
   </ItemGroup>
   <ItemGroup>
     <Image Include="alien.bmp" />

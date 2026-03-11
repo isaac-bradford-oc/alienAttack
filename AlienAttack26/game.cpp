@@ -1,4 +1,5 @@
 #include "gameHeader.h"
+<<<<<<< HEAD
 /*
  *  game.cpp
  *     - A simple game loop that allows you to move the ship
@@ -6,15 +7,31 @@
  *  AUTHOR: Initial work in this program was completed by Prof. Andy Harbert
  *          Prof. Pat Smith has made modifications (December 2021, 2024 upgrade to 3.0)
  */   
+=======
+/****************************************
+ * Isaac Bradford
+ * March 4, 2026
+ * Large Program 3
+ * File Name: game.cpp
+ * Description: This file contains the main function.
+ ****************************************/
+>>>>>>> 8e4678e (Add project files.)
 
 int main()
 {
 	// Create the window for graphics. 
 	//  The "aliens" is the text in the title bar on the window. 
+<<<<<<< HEAD
 	RenderWindow window(VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }), "Aliens!");
 	
 	// Limit the framerate to 60 frames per second
 	window.setFramerateLimit(60);
+=======
+	sf::RenderWindow window(sf::VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }), "Aliens!");
+	
+	// Limit the framerate to 60 frames per second
+	window.setFramerateLimit(FRAMERATE);
+>>>>>>> 8e4678e (Add project files.)
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// To create a Sprite, which is a movable image on the display, 
 	// You must first create a Texture 
@@ -25,6 +42,7 @@ int main()
 	// Notice we do this *before* going into animation loop.
 
 	// create the ship texture variable, load the image file. 
+<<<<<<< HEAD
 	Texture shipTexture;
 	if (!shipTexture.loadFromFile("ship.png"))
 	{
@@ -56,6 +74,29 @@ int main()
 	// *** You will have to code to load the  texture for the missile here. 
 	// Then create the missile Sprite. See how the ship was created above to make this work.
 	bool isMissileInFlight = false; // used to know if a missile is 'on screen'. 
+=======
+	
+	// create sprite and load the ship texture in it
+  
+	// initial position of the ship will be approx middle of screen
+	float shipX = window.getSize().x / 2.0f;
+	float shipY = window.getSize().y - (window.getSize().y / 5.0f);
+
+	Pixie* ship = new Pixie("ship.png", shipX, shipY, PLAYER_SHIP_PIXIE);
+	ship->setScale(SCALE, SCALE);
+
+	std::vector<Pixie*> missileVector = {};
+
+	Pixie* background = new Pixie("stars.jpg", ZERO, ZERO, BACKGROUND_PIXIE);
+	background->setScale(SCALE, SCALE);
+
+	// the background is a sprite, though we'll never move it around. 
+	// The texture file is 640x480, so scale it up a little to cover 800x600 window
+	// must include vector2 types in curly braces. 
+
+	// *** You will have to code to load the  texture for the missile here. 
+	// Then create the missile Sprite. See how the ship was created above to make this work.
+>>>>>>> 8e4678e (Add project files.)
 
 	/*
 	 *    MAIN GAME LOOP BELOW
@@ -98,10 +139,19 @@ int main()
 					// then you can move the missile "up" and "to the right" by
 					//     moving it positive distance in the x direction and 
 					//     moving it negative position in the y direction (up)
+<<<<<<< HEAD
 					//  missile.move({10, -10}); 
 
 					// set the missile boolean to be TRUE!
 					isMissileInFlight = true;
+=======
+					//  missile.move({10, -10});
+					missileVector.push_back(createMissile());
+
+					missileVector.back()->setPosition(ship->centerX(*missileVector.back()), ship->getY());
+
+					// set the missile boolean to be TRUE!
+>>>>>>> 8e4678e (Add project files.)
 				}   
 			}
 		}
@@ -114,11 +164,16 @@ int main()
 
 		// draw background first, so everything that's drawn later 
 		// will appear on top of background
+<<<<<<< HEAD
 		window.draw(background);
+=======
+		background->draw(window);
+>>>>>>> 8e4678e (Add project files.)
 
 		// call the function that will move this ship.
 		// the "moveship(..)" function checks for arrow keys pressed 
 		//    and changes the ships x and y coordinates to move it on the screen.
+<<<<<<< HEAD
 		moveShip(ship);
 
 		// After checking for ship movement, draw the ship on top of background 
@@ -128,6 +183,20 @@ int main()
 		if (isMissileInFlight)
 		{   
 			
+=======
+		moveShip(*ship);
+
+		if (!missileVector.empty())
+		{   
+			for (size_t i = 0; i < missileVector.size(); ++i) {
+				missileVector[i]->draw(window);
+				missileVector[i]->move(ZERO, -DISTANCE);
+
+				if (missileVector[i]->getSprite()->getPosition().y < ZERO) {
+					missileVector.erase(missileVector.begin() + i);
+				}
+			}
+>>>>>>> 8e4678e (Add project files.)
 			// move it "up" the screen by decreasing 'y' using missile.move({deltax, deltay});
 			// in later work you will check to see if the missile hit anything.
 			// Don't forget to draw the missile in its new position in the if statement below 
@@ -138,10 +207,20 @@ int main()
 			// if it's moved off the top, set the boolean to false!
 			// if the missile has not gone off the top of the screen, draw it!
 			// this is the default now, but the statement below should be inside an if block.
+<<<<<<< HEAD
 			isMissileInFlight = false; 
 				
 		}
 
+=======
+
+		}
+
+		// After checking for ship movement, draw the ship on top of background 
+		// (the ship from previous frame was erased when we drew background)
+		ship->draw(window);
+
+>>>>>>> 8e4678e (Add project files.)
 		// end the current frame; this makes everything that we have 
 		// already "drawn" actually shows up on the screen
 		window.display();
