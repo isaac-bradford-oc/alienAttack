@@ -1,28 +1,4 @@
 #pragma once
-<<<<<<< HEAD
-/*
-*  gameFunctions.cpp
-*     - The functions for the game program are in this file.
-*
-*  AUTHOR: Most of the work in this program was completed by Prof. Andy Harbert
-*          Prof. Pat Smith has made modifications (December 2021)
-*
-*/
-// includes go below
-#include <iostream>
-using namespace std;
-// these two lines are specific to the SFML graphics library. 
-#include <SFML/Graphics.hpp>
-using namespace sf;
-
-// Constants for the game 
-const float DISTANCE = 5.0f; // When the ship moves it moves 5 pixels at a time. 
-const int WINDOW_WIDTH = 800; // window is 800 pixels wide
-const int WINDOW_HEIGHT = 600;// window is 600 pixels vertically "high"
-
-// Game Functions
-void moveShip(Sprite& ship); 
-=======
 /****************************************
  * Isaac Bradford
  * March 4, 2026
@@ -65,11 +41,7 @@ const float ALIEN_STARTING_Y = (float)WINDOW_HEIGHT / 5.0f;
 // Game Functions
 void moveShip(Pixie& ship); // Moves ship based on which key is pressed
 Pixie* createMissile(); // Creates missile object
-<<<<<<< HEAD
->>>>>>> 8e4678e (Add project files.)
-=======
 Pixie* createAlien(float alienX, float alienY); // Creates alien object
 bool collision(Pixie* victimOfMissile, Pixie* missile); // Detects alien-missile collision
 void moveAlien(Pixie* alien, bool& isGoingLeft, bool& isChangingDirection);
 void spawnAlienWave(std::vector<Pixie*>& alienVector, int rows, int cols);
->>>>>>> b07e308 (mar28)
