@@ -9,6 +9,7 @@
 
 int Pixie::nextPixieID = 0; // Initialize shared ID variable
 
+// Center one object on another object
 float Pixie::centerX(Pixie& objectToCenter) {
 	float callerObjectCenter = getX() + mySprite->getLocalBounds().getCenter().x;
 	float passedObjectCenter = objectToCenter.getSprite()->getLocalBounds().getCenter().x;
@@ -45,3 +46,8 @@ Pixie::Pixie(std::string filename, float x, float y, int type) {
 	pixieType = type;
 }
 
+// Destructor
+Pixie::~Pixie() {
+	delete myTexture;
+	delete mySprite;
+}

@@ -13,10 +13,11 @@
  * March 4, 2026
  * Large Program 3
  * File Name: game.cpp
- * Description: This file contains the main function.
+ * Description: Main game loop and initialization.
  ****************************************/
 >>>>>>> 8e4678e (Add project files.)
 
+<<<<<<< HEAD
 int main()
 {
 	// Create the window for graphics. 
@@ -27,10 +28,20 @@ int main()
 	// Limit the framerate to 60 frames per second
 	window.setFramerateLimit(60);
 =======
+=======
+int main() {
+	// Initialize clock at zero
+	clock_t prevClock = 0;
+	clock_t currClock = NULL;
+
+	// Seed RNG
+	srand((unsigned int)time({}));
+
+	// Setup window and framerate
+>>>>>>> b07e308 (mar28)
 	sf::RenderWindow window(sf::VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }), "Aliens!");
-	
-	// Limit the framerate to 60 frames per second
 	window.setFramerateLimit(FRAMERATE);
+<<<<<<< HEAD
 >>>>>>> 8e4678e (Add project files.)
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// To create a Sprite, which is a movable image on the display, 
@@ -83,17 +94,32 @@ int main()
 	float shipY = window.getSize().y - (window.getSize().y / 5.0f);
 
 	Pixie* ship = new Pixie("ship.png", shipX, shipY, PLAYER_SHIP_PIXIE);
+=======
+
+	// Initialize Player Ship
+	Pixie* ship = new Pixie("ship.png", SHIP_X, SHIP_Y, PLAYER_SHIP_PIXIE);
+>>>>>>> b07e308 (mar28)
 	ship->setScale(SCALE, SCALE);
 
-	std::vector<Pixie*> missileVector = {};
+	// Entity vectors
+	std::vector<Pixie*> shipMissileVector = {};
+	std::vector<Pixie*> alienMissileVector = {};
+	std::vector<Pixie*> alienVector = {};
 
+	// Initial Alien setup
+	bool isGoingLeft = true;
+	bool isChangingDirection = false;
+	spawnAlienWave(alienVector, 4, 6);
+
+	// Background setup (scaled to window)
 	Pixie* background = new Pixie("stars.jpg", ZERO, ZERO, BACKGROUND_PIXIE);
-	background->setScale(SCALE, SCALE);
+	float bgScaleX = (float)WINDOW_WIDTH / background->getTexture()->getSize().x;
+	float bgScaleY = (float)WINDOW_HEIGHT / background->getTexture()->getSize().y;
+	background->setScale(bgScaleX, bgScaleY);
 
-	// the background is a sprite, though we'll never move it around. 
-	// The texture file is 640x480, so scale it up a little to cover 800x600 window
-	// must include vector2 types in curly braces. 
+	while (window.isOpen())	{
 
+<<<<<<< HEAD
 	// *** You will have to code to load the  texture for the missile here. 
 	// Then create the missile Sprite. See how the ship was created above to make this work.
 >>>>>>> 8e4678e (Add project files.)
@@ -152,10 +178,30 @@ int main()
 
 					// set the missile boolean to be TRUE!
 >>>>>>> 8e4678e (Add project files.)
+=======
+		// --- 1. Event Handling ---
+		while (const std::optional event = window.pollEvent()) {
+			if (event->is<sf::Event::Closed>()) {
+				window.close();
+			}
+			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+				if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
+					// DOESN'T WORK YET
+					while (keyPressed == nullptr) {
+						std::cout << "yes";
+					}
+				}
+				if (keyPressed->scancode == sf::Keyboard::Scancode::Space
+					&& (int)shipMissileVector.size() < MAX_PLAYER_MISSILES)	{
+					Pixie* missile = createMissile();
+					missile->setPosition(ship->centerX(*missile), ship->getY());
+					shipMissileVector.push_back(missile);
+>>>>>>> b07e308 (mar28)
 				}   
 			}
 		}
 
+<<<<<<< HEAD
 		//===========================================================
 		// Everything from here to the end of the loop is where you put your
 		// code to produce ONE frame of the animation. The next iteration of the loop will
@@ -184,18 +230,20 @@ int main()
 		{   
 			
 =======
+=======
+		// --- 2. Update Phase (Logic) ---
+>>>>>>> b07e308 (mar28)
 		moveShip(*ship);
 
-		if (!missileVector.empty())
-		{   
-			for (size_t i = 0; i < missileVector.size(); ++i) {
-				missileVector[i]->draw(window);
-				missileVector[i]->move(ZERO, -DISTANCE);
+		// Update missiles (move and check bounds)
+		for (int i = (int)shipMissileVector.size() - 1; i >= 0; --i) {
+			shipMissileVector[i]->move(ZERO, -MISSILE_DISTANCE);
 
-				if (missileVector[i]->getSprite()->getPosition().y < ZERO) {
-					missileVector.erase(missileVector.begin() + i);
-				}
+			if (shipMissileVector[i]->getY() < ZERO) {
+				delete shipMissileVector[i];
+				shipMissileVector.erase(shipMissileVector.begin() + i);
 			}
+<<<<<<< HEAD
 >>>>>>> 8e4678e (Add project files.)
 			// move it "up" the screen by decreasing 'y' using missile.move({deltax, deltay});
 			// in later work you will check to see if the missile hit anything.
@@ -214,24 +262,97 @@ int main()
 
 =======
 
+=======
+>>>>>>> b07e308 (mar28)
 		}
 
-		// After checking for ship movement, draw the ship on top of background 
-		// (the ship from previous frame was erased when we drew background)
+		// Update aliens and check collisions
+		if (alienVector.empty()) {
+			std::cout << "You win!" << std::endl;
+			exit(0);
+		}
+
+		for (int i = (int)alienVector.size() - 1; i >= 0; --i) {
+			moveAlien(alienVector[i], isGoingLeft, isChangingDirection);
+
+			if (alienVector[i]->getY() > SHIP_Y) {
+				exit(0);
+			}
+
+			for (int j = (int)shipMissileVector.size() - 1; j >= 0; --j) {
+				if (collision(alienVector[i], shipMissileVector[j])) {
+					delete alienVector[i];
+					alienVector.erase(alienVector.begin() + i);
+
+					delete shipMissileVector[j];
+					shipMissileVector.erase(shipMissileVector.begin() + j);
+
+					break; // Alien destroyed, stop checking missiles for it
+				}
+			}
+		}
+
+		// Move aliens down if they are changing direction
+		if (isChangingDirection){
+			for (Pixie* alien : alienVector) alien->move(ZERO, ALIEN_VERTICAL_DISTANCE);
+			isChangingDirection = false;
+		}
+
+		// Periodically have random alien fire missile
+		currClock = clock() / CLOCKS_PER_SEC;
+		if (((currClock - 1) - ((rand() % 30 + 1) / 10)) >= prevClock) {
+			int randomAlienIdx = rand() % (alienVector.size() - 1);
+
+			Pixie* missile = createMissile();
+			missile->setPosition(alienVector[randomAlienIdx]->centerX(*missile), alienVector[randomAlienIdx]->getY());
+			alienMissileVector.push_back(missile);
+
+			prevClock = currClock;
+		}
+
+		for (int i = (int)alienMissileVector.size() - 1; i >= 0; --i) {
+			alienMissileVector[i]->move(ZERO, MISSILE_DISTANCE);
+
+			if (alienMissileVector[i]->getY() < ZERO) {
+				delete alienMissileVector[i];
+				alienMissileVector.erase(alienMissileVector.begin() + i);
+			}
+
+			if (collision(ship, alienMissileVector[i])) {
+					delete ship;
+
+					delete alienMissileVector[i];
+					alienMissileVector.erase(alienMissileVector.begin() + i);
+
+					exit(0);
+			}
+		}
+
+		// --- 3. Draw Phase (Rendering) ---
+		window.clear();
+		background->draw(window);
+		
+		for (Pixie* missile : shipMissileVector) missile->draw(window);
+		for (Pixie* missile : alienMissileVector) missile->draw(window);
+		for (Pixie* alien : alienVector) alien->draw(window);
+		
 		ship->draw(window);
+<<<<<<< HEAD
 
 >>>>>>> 8e4678e (Add project files.)
 		// end the current frame; this makes everything that we have 
 		// already "drawn" actually shows up on the screen
+=======
+>>>>>>> b07e308 (mar28)
 		window.display();
+	}
 
-		// At this point the frame we have built is now visible on screen.
-		// Now control will go back to the top of the animation loop
-		// to build the next frame. Since we begin by drawing the
-		// background, each frame is rebuilt from scratch.
-
-	} // end body of animation loop
+	// Cleanup remaining memory
+	delete ship;
+	delete background;
+	for (Pixie* missile : shipMissileVector) delete missile;
+	for (Pixie* missile : alienMissileVector) delete missile;
+	for (Pixie* alien : alienVector) delete alien;
 
 	return 0;
 }
-

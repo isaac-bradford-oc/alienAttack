@@ -18,6 +18,7 @@
  ****************************************/
 >>>>>>> 8e4678e (Add project files.)
 
+<<<<<<< HEAD
 // note: a Sprite represents an image on screen. A sprite knows and remembers its own position
 // ship.move(offsetX, offsetY) adds offsetX, offsetY to 
 // the current position of the ship. 
@@ -39,6 +40,8 @@ void moveShip(Sprite& ship)
 *  INPUT: The ship.sprite is passed.  This merely a drawn object on the screen.
 *  RETURN: None
 */
+=======
+>>>>>>> b07e308 (mar28)
 void moveShip(Pixie& ship)
 >>>>>>> 8e4678e (Add project files.)
 {
@@ -72,27 +75,17 @@ void moveShip(Pixie& ship)
 	{
 		// left arrow is pressed: move our ship.left 5 pixels ( this is -5 pixels to go left)
 		// 2nd parm is y direction. We don't want to move up/down, so it's zero.
-		ship.move(-DISTANCE, 0);
+		ship.move(-SHIP_DISTANCE, 0);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 	{
 		// right arrow is pressed: move our ship.right 5 pixels
-		ship.move(DISTANCE, 0);
+		ship.move(SHIP_DISTANCE, 0);
 	}
-	//else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-	//	// ship only moves up if it's not at the limit
-	//	if (ship.getY() > SHIP_UPPER_LIMIT) {
-	//		ship.move(0.0, -DISTANCE);
-	//	}
-	//}
-	//else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-	//	// down arrow is pressed: move ship down 5 pixels
-	//	ship.move(0.0, DISTANCE);
-	//}
-	//// *** add code (more if/else blocks) to move ship.up/down
 
 	int locationX = static_cast<int>(ship.getX());
 	int locationY = static_cast<int>(ship.getY());
+<<<<<<< HEAD
 	// What do you want to do when you reach the edge of the screen? 
 	//   You might just move the ship.back, simulate hitting a "wall"
 >>>>>>> 8e4678e (Add project files.)
@@ -125,6 +118,8 @@ void moveShip(Pixie& ship)
 >>>>>>> 8e4678e (Add project files.)
 	// 
 	//cout << ship.getPosition().x << ", " << ship.getPosition().y << endl; 
+=======
+>>>>>>> b07e308 (mar28)
 }
 
 <<<<<<< HEAD
@@ -133,4 +128,59 @@ Pixie* createMissile() {
 	Pixie* missile = new Pixie("missile.bmp", ZERO, ZERO, PLAYER_MISSILE_PIXIE);
 	return missile;
 }
+<<<<<<< HEAD
 >>>>>>> 8e4678e (Add project files.)
+=======
+
+Pixie* createAlien(float alienX, float alienY) {
+	Pixie* alien = new Pixie("alien.bmp", alienX, alienY, ALIEN_PIXIE);
+	return alien;
+}
+
+bool collision(Pixie* victimOfMissile, Pixie* missile) {
+	bool isHit = false;
+	sf::FloatRect alienBounds = victimOfMissile->getSprite()->getGlobalBounds();
+	sf::FloatRect missileBounds = missile->getSprite()->getGlobalBounds();
+
+	if (alienBounds.findIntersection(missileBounds)) {
+		std::cout << "Hit!" << std::endl;
+		isHit = true;
+	}
+
+	return isHit;
+}
+
+void moveAlien(Pixie* alien, bool& isGoingLeft, bool& isChangingDirection) {
+	float alienWidth = alien->getSprite()->getGlobalBounds().size.x;
+
+	if (alien->getX() == ZERO) {
+		isGoingLeft = false;
+		isChangingDirection = true;
+	}
+	else if (alien->getX() == WINDOW_WIDTH - alienWidth) {
+		isGoingLeft = true;
+		isChangingDirection = true;
+	}
+
+	if (isGoingLeft == true) {
+		alien->move(-ALIEN_HORIZONTAL_DISTANCE, ZERO);
+	}
+	else {
+		alien->move(ALIEN_HORIZONTAL_DISTANCE, ZERO);
+	}
+}
+
+void spawnAlienWave(std::vector<Pixie*>& alienVector, int rows, int cols) {
+	if (rows % 2 == 1) { ++rows; }
+	if (cols % 2 == 1) { ++cols; }
+	rows /= 2;
+	cols /= 2;
+	for (int r = -rows; r < rows; ++r) {
+		for (int c = -cols; c < cols; ++c) {
+             float x = ALIEN_STARTING_X + (c * 80); // 80 pixels apart
+             float y = ALIEN_STARTING_Y + (r * 60);
+             alienVector.push_back(createAlien(x, y));
+		}
+	}
+}
+>>>>>>> b07e308 (mar28)
