@@ -133,11 +133,13 @@
   <ItemGroup>
     <ClInclude Include="gameHeader.h" />
     <ClInclude Include="Pixie.h" />
+    <ClInclude Include="Ship.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameFunctions.cpp" />
     <ClCompile Include="Pixie.cpp" />
+    <ClCompile Include="Ship.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="alien.bmp" />

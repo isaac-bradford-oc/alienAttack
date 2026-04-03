@@ -1,4 +1,3 @@
-#include "gameHeader.h"
 /****************************************
  * Isaac Bradford
  * March 4, 2026
@@ -6,6 +5,8 @@
  * File Name: game.cpp
  * Description: Main game loop and initialization.
  ****************************************/
+
+#include "gameHeader.h"
 
 int main() {
 	// Initialize clock at zero
@@ -16,25 +17,25 @@ int main() {
 	srand((unsigned int)time({}));
 
 	// Setup window and framerate
-	sf::RenderWindow window(sf::VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }), "Aliens!");
+	RenderWindow window(VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }), GAME_NAME);
 	window.setFramerateLimit(FRAMERATE);
 
 	// Initialize Player Ship
-	Pixie* ship = new Pixie("ship.png", SHIP_X, SHIP_Y, PLAYER_SHIP_PIXIE);
+	Ship* ship = new Ship(MAX_PLAYER_LIVES);
 	ship->setScale(SCALE, SCALE);
 
 	// Entity vectors
-	std::vector<Pixie*> shipMissileVector = {};
-	std::vector<Pixie*> alienMissileVector = {};
-	std::vector<Pixie*> alienVector = {};
+	vector<Pixie*> alienVector = {};
+	vector<Pixie*> shipMissileVector = {};
+	vector<Pixie*> alienMissileVector = {};
 
-	// Initial Alien setup
+	// Initial alien setup
 	bool isGoingLeft = true;
 	bool isChangingDirection = false;
-	spawnAlienWave(alienVector, 4, 6);
+	spawnAlienWave(alienVector, 4, 6); // Spawn grid of aliens
 
 	// Background setup (scaled to window)
-	Pixie* background = new Pixie("stars.jpg", ZERO, ZERO, BACKGROUND_PIXIE);
+	Pixie* background = new Pixie(BACKGROUND_TEXTURE_FILE, ZERO, ZERO, BACKGROUND_PIXIE);
 	float bgScaleX = (float)WINDOW_WIDTH / background->getTexture()->getSize().x;
 	float bgScaleY = (float)WINDOW_HEIGHT / background->getTexture()->getSize().y;
 	background->setScale(bgScaleX, bgScaleY);
@@ -42,23 +43,29 @@ int main() {
 	while (window.isOpen())	{
 
 		// --- 1. Event Handling ---
-		while (const std::optional event = window.pollEvent()) {
-			if (event->is<sf::Event::Closed>()) {
+		while (const optional event = window.pollEvent()) {
+			// Close the game window
+			if (event->is<Event::Closed>()) {
 				window.close();
 			}
-			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-				if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
-					// DOESN'T WORK YET
-					while (keyPressed == nullptr) {
-						std::cout << "yes";
+			// Capture keystroke
+			else if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) { // If key pressed
+				// Pause the game
+				if (keyPressed->scancode == Keyboard::Scancode::Escape) { // If escape pressed
+					while (const optional event = window.waitEvent()) { // Wait for event (in this case, keystroke)
+						// Resume the game
+						if (event->is<Event::KeyPressed>()) { // If event is keystroke
+							break;
+						}
 					}
 				}
-				if (keyPressed->scancode == sf::Keyboard::Scancode::Space
-					&& (int)shipMissileVector.size() < MAX_PLAYER_MISSILES)	{
-					Pixie* missile = createMissile();
-					missile->setPosition(ship->centerX(*missile), ship->getY());
-					shipMissileVector.push_back(missile);
-				}   
+				// Shoot missile
+				if (keyPressed->scancode == Keyboard::Scancode::Space
+					&& (int)shipMissileVector.size() < MAX_PLAYER_MISSILES) { // If space is pressed and missile limit not reached
+					Pixie* missile = createMissile(); // Create missile
+					missile->setPosition(ship->centerX(*missile), ship->getY()); // Center missile on ship
+					shipMissileVector.push_back(missile); // Add missile to the ship missile vector
+				}
 			}
 		}
 
@@ -69,30 +76,37 @@ int main() {
 		for (int i = (int)shipMissileVector.size() - 1; i >= 0; --i) {
 			shipMissileVector[i]->move(ZERO, -MISSILE_DISTANCE);
 
+			// If missile reaches edge of window, erase it
 			if (shipMissileVector[i]->getY() < ZERO) {
 				delete shipMissileVector[i];
 				shipMissileVector.erase(shipMissileVector.begin() + i);
 			}
 		}
 
-		// Update aliens and check collisions
+		// End the game if player defeats all aliens
 		if (alienVector.empty()) {
-			std::cout << "You win!" << std::endl;
+			cout << "You win!" << endl;
 			exit(0);
 		}
 
+		// Move alien army and check if any aliens are hit
 		for (int i = (int)alienVector.size() - 1; i >= 0; --i) {
 			moveAlien(alienVector[i], isGoingLeft, isChangingDirection);
 
+			// End the game if an alien reaches below the player
 			if (alienVector[i]->getY() > SHIP_Y) {
+				cout << "You lose!" << endl;
 				exit(0);
 			}
 
+			// Check if any aliens are hit
 			for (int j = (int)shipMissileVector.size() - 1; j >= 0; --j) {
 				if (collision(alienVector[i], shipMissileVector[j])) {
+					// Delete  alien
 					delete alienVector[i];
 					alienVector.erase(alienVector.begin() + i);
 
+					// Delete missile
 					delete shipMissileVector[j];
 					shipMissileVector.erase(shipMissileVector.begin() + j);
 
@@ -103,57 +117,70 @@ int main() {
 
 		// Move aliens down if they are changing direction
 		if (isChangingDirection){
-			for (Pixie* alien : alienVector) alien->move(ZERO, ALIEN_VERTICAL_DISTANCE);
+			for (Pixie* alien : alienVector) {
+				alien->move(ZERO, ALIEN_VERTICAL_DISTANCE);
+			}
 			isChangingDirection = false;
 		}
 
 		// Periodically have random alien fire missile
-		currClock = clock() / CLOCKS_PER_SEC;
-		if (((currClock - 1) - ((rand() % 30 + 1) / 10)) >= prevClock) {
-			int randomAlienIdx = rand() % (alienVector.size() - 1);
+		currClock = clock() / CLOCKS_PER_SEC; // Converts cpu clock unit to seconds
+		if (((currClock - ONE_SECOND) - secondsOffset(1)) >= prevClock) { // If >= 1 + offset has passed since last missile
+			int randomAlienIdx = rand() % (alienVector.size() - 1); // Chooses random alien
 
+			// Create the missile
 			Pixie* missile = createMissile();
-			missile->setPosition(alienVector[randomAlienIdx]->centerX(*missile), alienVector[randomAlienIdx]->getY());
+
+			float missileX = alienVector[randomAlienIdx]->centerX(*missile);
+			float missileY = alienVector[randomAlienIdx]->getY();
+			missile->setPosition(missileX, missileY);
+
 			alienMissileVector.push_back(missile);
 
+			// Prepare clock for next loop
 			prevClock = currClock;
 		}
 
+		// Moves alien missiles and detects if the player ship was hit
 		for (int i = (int)alienMissileVector.size() - 1; i >= 0; --i) {
-			alienMissileVector[i]->move(ZERO, MISSILE_DISTANCE);
+			alienMissileVector[i]->move(ZERO, MISSILE_DISTANCE); // Move missiles
 
+			// Delete missiles if they reach the edge of the window
 			if (alienMissileVector[i]->getY() < ZERO) {
 				delete alienMissileVector[i];
 				alienMissileVector.erase(alienMissileVector.begin() + i);
 			}
 
+			// End the game if an alien missile hits the ship
 			if (collision(ship, alienMissileVector[i])) {
 					delete ship;
 
 					delete alienMissileVector[i];
 					alienMissileVector.erase(alienMissileVector.begin() + i);
 
+					cout << "You lose!" << endl;
 					exit(0);
 			}
 		}
 
 		// --- 3. Draw Phase (Rendering) ---
 		window.clear();
-		background->draw(window);
+		background->draw(window); // Draw background
 		
-		for (Pixie* missile : shipMissileVector) missile->draw(window);
+		// Draw all missile and alien elements from vectors
 		for (Pixie* missile : alienMissileVector) missile->draw(window);
+		for (Pixie* missile : shipMissileVector) missile->draw(window);
 		for (Pixie* alien : alienVector) alien->draw(window);
 		
-		ship->draw(window);
+		ship->draw(window); // Draw ship
 		window.display();
 	}
 
 	// Cleanup remaining memory
 	delete ship;
 	delete background;
-	for (Pixie* missile : shipMissileVector) delete missile;
 	for (Pixie* missile : alienMissileVector) delete missile;
+	for (Pixie* missile : shipMissileVector) delete missile;
 	for (Pixie* alien : alienVector) delete alien;
 
 	return 0;
