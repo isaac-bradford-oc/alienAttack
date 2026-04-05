@@ -1,7 +1,7 @@
 /****************************************
  * Isaac Bradford
- * March 4, 2026
- * Large Program 3
+ * April 4, 2026
+ * Large Program 5
  * File Name: game.cpp
  * Description: Main game loop and initialization.
  ****************************************/
@@ -10,8 +10,8 @@
 
 int main() {
 	// Initialize clock at zero
-	clock_t prevClock = 0;
-	clock_t currClock = NULL;
+	clock_t previousClock = 0;
+	clock_t currentClock = NULL;
 
 	// Seed RNG
 	srand((unsigned int)time({}));
@@ -19,6 +19,9 @@ int main() {
 	// Setup window and framerate
 	RenderWindow window(VideoMode({ WINDOW_WIDTH, WINDOW_HEIGHT }), GAME_NAME);
 	window.setFramerateLimit(FRAMERATE);
+
+	// Initialize game score
+	unsigned int gameScore = 0u;
 
 	// Initialize Player Ship
 	Ship* ship = new Ship(MAX_PLAYER_LIVES);
@@ -28,11 +31,12 @@ int main() {
 	vector<Pixie*> alienVector = {};
 	vector<Pixie*> shipMissileVector = {};
 	vector<Pixie*> alienMissileVector = {};
+	vector<Pixie*> lifeIconVector = {};
 
 	// Initial alien setup
 	bool isGoingLeft = true;
 	bool isChangingDirection = false;
-	spawnAlienWave(alienVector, 19); // Spawn grid of aliens
+	spawnAlienWave(alienVector, LEVEL_ONE_ALIENS);
 
 	// Background setup (scaled to window)
 	Pixie* background = new Pixie(BACKGROUND_TEXTURE_FILE, ZERO, ZERO, BACKGROUND_PIXIE);
@@ -83,11 +87,10 @@ int main() {
 		}
 
 		// --- 2. Update Phase (Logic) ---
-
 		if (ship->getLives() < remainingLives) {
 			if (ship->getLives() == 0) {
 				cout << "You lose!" << endl;
-				exit(0);
+				window.close();
 			}
 
 			clock_t initialTime = clock() / CLOCKS_PER_SEC;
@@ -118,7 +121,7 @@ int main() {
 		// End the game if player defeats all aliens
 		if (alienVector.empty()) {
 			cout << "You win!" << endl;
-			exit(0);
+			window.close();
 		}
 
 		// Move alien army and check if any aliens are hit
@@ -142,6 +145,9 @@ int main() {
 					delete shipMissileVector[j];
 					shipMissileVector.erase(shipMissileVector.begin() + j);
 
+					// Increase game score
+					gameScore += ALIEN_SCORE;
+
 					break; // Alien destroyed, stop checking missiles for it
 				}
 			}
@@ -156,9 +162,9 @@ int main() {
 		}
 
 		// Periodically have random alien fire missile
-		currClock = clock() / CLOCKS_PER_SEC; // Converts cpu clock unit to seconds
-		if (((currClock - ONE_SECOND) - secondsOffset(1)) >= prevClock) { // If >= 1 + offset has passed since last missile
-			int randomAlienIdx = rand() % (alienVector.size() - 1); // Chooses random alien
+		currentClock = clock() / CLOCKS_PER_SEC; // Converts cpu clock unit to seconds
+		if (((currentClock - ONE_SECOND) - alienMissileSecondsOffset(ALIEN_MISSILE_MAX_TIME_OFFSET)) >= previousClock) { // If >= 1 + offset seconds has passed since last missile
+			int randomAlienIdx = rand() % alienVector.size(); // Chooses random alien
 
 			// Create the missile
 			Pixie* missile = createMissile();
@@ -170,7 +176,7 @@ int main() {
 			alienMissileVector.push_back(missile);
 
 			// Prepare clock for next loop
-			prevClock = currClock;
+			previousClock = currentClock;
 		}
 
 		// Moves alien missiles and detects if the player ship was hit
@@ -189,6 +195,19 @@ int main() {
 			}
 		}
 
+		// Add life icons
+		while (static_cast<int>(lifeIconVector.size()) < remainingLives) {
+			float iconX = static_cast<float>(WINDOW_WIDTH) - ((lifeIconVector.size() + 1) * LIFE_ICON_OFFSET); // Start at right border and place each alien further left
+			float iconY = WINDOW_HEIGHT - LIFE_ICON_OFFSET; // Bottom border minus offset
+			Pixie* lifeIcon = new Pixie(SHIP_TEXTURE_FILE, iconX, iconY, LIFE_ICON_PIXIE); // Create life icon
+			lifeIconVector.push_back(lifeIcon); // Push icon to vector
+		}
+		
+		// Remove life icons
+		while (static_cast<int>(lifeIconVector.size()) > remainingLives) {
+			lifeIconVector.pop_back();
+		}
+
 		// --- 3. Draw Phase (Rendering) ---
 		window.clear();
 		background->draw(window); // Draw background
@@ -197,6 +216,7 @@ int main() {
 		for (Pixie* missile : alienMissileVector) missile->draw(window);
 		for (Pixie* missile : shipMissileVector) missile->draw(window);
 		for (Pixie* alien : alienVector) alien->draw(window);
+		for (Pixie* lifeIcon : lifeIconVector) lifeIcon->draw(window);
 		
 		ship->draw(window); // Draw ship
 		window.display();
@@ -208,6 +228,9 @@ int main() {
 	for (Pixie* missile : alienMissileVector) delete missile;
 	for (Pixie* missile : shipMissileVector) delete missile;
 	for (Pixie* alien : alienVector) delete alien;
+
+	// Output game score
+	cout << "Your score was: " << gameScore << endl;
 
 	return 0;
 }

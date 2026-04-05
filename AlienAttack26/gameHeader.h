@@ -1,7 +1,7 @@
 /****************************************
  * Isaac Bradford
- * March 4, 2026
- * Large Program 3
+ * April 4, 2026
+ * Large Program 5
  * File Name: gameHeader.h
  * Description: This file contains the includes, constants, and function prototypes.
  ****************************************/
@@ -33,16 +33,20 @@ const int PLAYER_SHIP_PIXIE = 1; // Ship pixie type
 const int PLAYER_MISSILE_PIXIE = 2; // Missile pixie type
 const int ALIEN_PIXIE = 3; // Alien pixie type
 const int BACKGROUND_PIXIE = 4; // Background pixie type
+const int LIFE_ICON_PIXIE = 5; // Player lives icon
 
 const unsigned int WINDOW_WIDTH = 1200u; // Window is 800 pixels wide
 const unsigned int WINDOW_HEIGHT = 1400u; // Window is 600 pixels tall
 const unsigned int FRAMERATE = 60u; // Window framerate
 const float SCALE = 1.5f; // Scale factor for sprite textures
 
-const int ONE_SECOND = 1; // For clarification when using clock
 const float ZERO = 0.0f; // Zero as float
+const int ONE_SECOND = 1; // For clarification when using clock
+const int SECONDS_TO_CENTISECONDS_FACTOR = 10;
 
 const int MAX_PLAYER_LIVES = 3; // Starting player lives
+const int LIFE_ICON_OFFSET = 25; // Space between life icons
+
 const float SHIP_X = WINDOW_WIDTH / 2.0f; // Ship starting x position
 const float SHIP_Y = WINDOW_HEIGHT - (WINDOW_HEIGHT / 5.0f); // Ship starting y position
 const float SHIP_DISTANCE = 10.0f; // When the ship moves it moves 5 pixels at a time. 
@@ -57,13 +61,18 @@ const float ALIEN_HORIZONTAL_DISTANCE = 2.5f; // Alien horizontal movement dista
 const float ALIEN_VERTICAL_DISTANCE = 250.0f; //  Alien vertical movement distance
 const float ALIEN_X = WINDOW_WIDTH / 2.0f; // Starting horizontal position of alien army center
 const float ALIEN_Y = WINDOW_HEIGHT / 5.0f; // Starting vertical position of alien army center
+const unsigned int ALIEN_X_OFFSET = 80u; // Distance between alien rows
+const unsigned int ALIEN_Y_OFFSET = 60u; // Distance between alien columns
+const unsigned int ALIEN_SCORE = 250u; // Score for eliminating an alien
+const unsigned int LEVEL_ONE_ALIENS = 19u; // Amount of aliens to spawn in level one
+const unsigned int ALIEN_MISSILE_MAX_TIME_OFFSET = 1u; // Max time to offset firing of alien missile
 
 // Game Functions
-Pixie* createAlien(float alienX, float alienY); // Creates alien object
-Pixie* createMissile(); // Creates missile object
-void spawnAlienWave(std::vector<Pixie*>& alienVector, int numAliens); // Spawns aliens grid
+Pixie* createAlien(float alienX, float alienY); // Creates a new alien object
+Pixie* createMissile(); // Creates a new missile object
+void spawnAlienWave(std::vector<Pixie*>& alienVector, unsigned int numAliens); // Spawns an alien wave based on passed quantity 
 void spawnAlienWave(vector<Pixie*>& alienVector); // Spawns alien wave based on size of passed vector
 void moveShip(Pixie& ship); // Moves ship based on which key is pressed
-void moveAlien(Pixie* alien, bool& isGoingLeft, bool& isChangingDirection); // Moves alien by alien distance constants, checks if alien hits horizontal limit, and changes its direction
-bool collision(Pixie* victimOfMissile, Pixie* missile); // Detects alien-missile collision
-int secondsOffset(int seconds); // Second offset used with clock
+void moveAlien(Pixie* alien, bool& isGoingLeft, bool& isChangingDirection); // Moves alien and changes direction if it hits a border
+bool collision(Pixie* victimOfMissile, Pixie* missile); // Checks for collision between two objects
+int alienMissileSecondsOffset(unsigned int seconds); // Returns randomized seconds offset based on passed max offset

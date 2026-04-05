@@ -1,9 +1,9 @@
 /****************************************
  * Isaac Bradford
- * March 4, 2026
- * Large Program 3
- * File Name: pixie.cpp
- * Description: This file contains the pixie class functions. 
+ * April 4, 2026
+ * Large Program 5
+ * File Name: Pixie.cpp
+ * Description: This file contains the Pixie class functions. 
  ****************************************/
 
 #include "gameHeader.h"
@@ -17,7 +17,7 @@ float Pixie::centerX(Pixie& objectToCenter) {
 	return callerObjectCenter + passedObjectCenter;
 }
 
-// Load pixie's texture from file
+// Load Pixie's texture from file
 void Pixie::setTextureSourceFile(string filename) {
 	// Allocate memory for texture
 	myTexture = new Texture();
@@ -36,7 +36,7 @@ Pixie::Pixie() {
 	setType(UNDEFINED_PIXIE);
 }
 
-// Loads pixie's texture from file, sets sprite position, and assigns pixie type
+// Loads Pixie's texture from file, sets sprite position, and assigns pixie type
 Pixie::Pixie(string filename, float x, float y, int type) {
 	setTextureSourceFile(filename);
 

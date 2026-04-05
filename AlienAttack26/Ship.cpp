@@ -1,13 +1,14 @@
 /****************************************
  * Isaac Bradford
- * March 4, 2026
+ * April 4, 2026
  * Large Program 5
  * File Name: Ship.cpp
- * Description: This file contains the pixie class functions. 
+ * Description: This file contains the Ship class functions. 
  ****************************************/
 
 #include "gameHeader.h"
 
+// Decrement lives and reset ship position
 void Ship::loseLife() {
 	--lives;
 	setPosition(SHIP_OOB, SHIP_OOB);
@@ -22,10 +23,4 @@ Ship::Ship(unsigned int lives) {
 	setPosition(SHIP_X, SHIP_Y);
 	setID();
 	setType(PLAYER_SHIP_PIXIE);
-}
-
-// Destructor
-Ship::~Ship() {
-	delete getTexture();
-	delete getSprite();
 }
