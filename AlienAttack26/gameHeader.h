@@ -43,24 +43,26 @@ const int ONE_SECOND = 1; // For clarification when using clock
 const float ZERO = 0.0f; // Zero as float
 
 const int MAX_PLAYER_LIVES = 3; // Starting player lives
-const float SHIP_X = (float)WINDOW_WIDTH / 2.0f; // Ship starting x position
-const float SHIP_Y = (float)WINDOW_HEIGHT - ((float)WINDOW_HEIGHT / 5.0f); // Ship starting y position
+const float SHIP_X = WINDOW_WIDTH / 2.0f; // Ship starting x position
+const float SHIP_Y = WINDOW_HEIGHT - (WINDOW_HEIGHT / 5.0f); // Ship starting y position
 const float SHIP_DISTANCE = 10.0f; // When the ship moves it moves 5 pixels at a time. 
+const float SHIP_OOB = -50.0f; // Ship out-of-bounds coordinates
 
 const int MAX_PLAYER_MISSILES = 3; // Player missile limit
 const float MISSILE_DISTANCE = 10.0f; // Distance a missile should move
 
-const float ALIEN_LEFT_LIMIT = (float)WINDOW_WIDTH / 4.0f; // Left limit for alien army
-const float ALIEN_RIGHT_LIMIT = (float)WINDOW_WIDTH - (float)WINDOW_WIDTH / 4.0f; // Left limit for alien army
+const float ALIEN_LEFT_LIMIT = WINDOW_WIDTH / 4.0f; // Left limit for alien army
+const float ALIEN_RIGHT_LIMIT = WINDOW_WIDTH - (WINDOW_WIDTH / 4.0f); // Left limit for alien army
 const float ALIEN_HORIZONTAL_DISTANCE = 2.5f; // Alien horizontal movement distance
 const float ALIEN_VERTICAL_DISTANCE = 250.0f; //  Alien vertical movement distance
-const float ALIEN_STARTING_X = (float)WINDOW_WIDTH / 2.0f; // Starting horizontal position of alien army center
-const float ALIEN_STARTING_Y = (float)WINDOW_HEIGHT / 5.0f; // Starting vertical position of alien army center
+const float ALIEN_X = WINDOW_WIDTH / 2.0f; // Starting horizontal position of alien army center
+const float ALIEN_Y = WINDOW_HEIGHT / 5.0f; // Starting vertical position of alien army center
 
 // Game Functions
 Pixie* createAlien(float alienX, float alienY); // Creates alien object
 Pixie* createMissile(); // Creates missile object
-void spawnAlienWave(std::vector<Pixie*>& alienVector, int rows, int cols); // Spawns aliens in even number of rows and columns
+void spawnAlienWave(std::vector<Pixie*>& alienVector, int numAliens); // Spawns aliens grid
+void spawnAlienWave(vector<Pixie*>& alienVector); // Spawns alien wave based on size of passed vector
 void moveShip(Pixie& ship); // Moves ship based on which key is pressed
 void moveAlien(Pixie* alien, bool& isGoingLeft, bool& isChangingDirection); // Moves alien by alien distance constants, checks if alien hits horizontal limit, and changes its direction
 bool collision(Pixie* victimOfMissile, Pixie* missile); // Detects alien-missile collision

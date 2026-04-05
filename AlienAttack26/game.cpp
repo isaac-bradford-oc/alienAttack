@@ -22,7 +22,7 @@ int main() {
 
 	// Initialize Player Ship
 	Ship* ship = new Ship(MAX_PLAYER_LIVES);
-	ship->setScale(SCALE, SCALE);
+	int remainingLives = MAX_PLAYER_LIVES;
 
 	// Entity vectors
 	vector<Pixie*> alienVector = {};
@@ -32,13 +32,26 @@ int main() {
 	// Initial alien setup
 	bool isGoingLeft = true;
 	bool isChangingDirection = false;
-	spawnAlienWave(alienVector, 4, 6); // Spawn grid of aliens
+	spawnAlienWave(alienVector, 19); // Spawn grid of aliens
 
 	// Background setup (scaled to window)
 	Pixie* background = new Pixie(BACKGROUND_TEXTURE_FILE, ZERO, ZERO, BACKGROUND_PIXIE);
-	float bgScaleX = (float)WINDOW_WIDTH / background->getTexture()->getSize().x;
-	float bgScaleY = (float)WINDOW_HEIGHT / background->getTexture()->getSize().y;
+	float bgScaleX = static_cast<float>(WINDOW_WIDTH) / background->getTexture()->getSize().x;
+	float bgScaleY = static_cast<float>(WINDOW_HEIGHT) / background->getTexture()->getSize().y;
 	background->setScale(bgScaleX, bgScaleY);
+
+	// Start screen
+	background->draw(window); // Draw background
+	ship->draw(window); // Draw ship
+	for (Pixie* alien : alienVector) alien->draw(window); // Draw aliens from vector
+	window.display(); // Push window
+
+	// Wait to start until first input
+	while (const optional event = window.waitEvent()) {
+		if (event->is<Event::KeyPressed>()) {
+			break;
+		}
+	}
 
 	while (window.isOpen())	{
 
@@ -61,7 +74,7 @@ int main() {
 				}
 				// Shoot missile
 				if (keyPressed->scancode == Keyboard::Scancode::Space
-					&& (int)shipMissileVector.size() < MAX_PLAYER_MISSILES) { // If space is pressed and missile limit not reached
+					&& static_cast<int>(shipMissileVector.size()) < MAX_PLAYER_MISSILES) { // If space is pressed and missile limit not reached
 					Pixie* missile = createMissile(); // Create missile
 					missile->setPosition(ship->centerX(*missile), ship->getY()); // Center missile on ship
 					shipMissileVector.push_back(missile); // Add missile to the ship missile vector
@@ -70,10 +83,29 @@ int main() {
 		}
 
 		// --- 2. Update Phase (Logic) ---
+
+		if (ship->getLives() < remainingLives) {
+			if (ship->getLives() == 0) {
+				cout << "You lose!" << endl;
+				exit(0);
+			}
+
+			clock_t initialTime = clock() / CLOCKS_PER_SEC;
+			while (((clock() / CLOCKS_PER_SEC) - ONE_SECOND) < initialTime) {}
+
+			spawnAlienWave(alienVector);
+			alienMissileVector.clear();
+
+			ship->setPosition(SHIP_X, SHIP_Y);
+			--remainingLives;
+		}
+
+
 		moveShip(*ship);
 
 		// Update missiles (move and check bounds)
-		for (int i = (int)shipMissileVector.size() - 1; i >= 0; --i) {
+		for (int i = static_cast<int>(shipMissileVector.size()) - 1; i >= 0; --i) {
+			// Move missiles
 			shipMissileVector[i]->move(ZERO, -MISSILE_DISTANCE);
 
 			// If missile reaches edge of window, erase it
@@ -90,17 +122,17 @@ int main() {
 		}
 
 		// Move alien army and check if any aliens are hit
-		for (int i = (int)alienVector.size() - 1; i >= 0; --i) {
+		for (int i = static_cast<int>(alienVector.size()) - 1; i >= 0; --i) {
 			moveAlien(alienVector[i], isGoingLeft, isChangingDirection);
 
-			// End the game if an alien reaches below the player
+			// Lose a life if an alien reaches below the player
 			if (alienVector[i]->getY() > SHIP_Y) {
-				cout << "You lose!" << endl;
-				exit(0);
+				ship->loseLife();
+				break;
 			}
 
 			// Check if any aliens are hit
-			for (int j = (int)shipMissileVector.size() - 1; j >= 0; --j) {
+			for (int j = static_cast<int>(shipMissileVector.size()) - 1; j >= 0; --j) {
 				if (collision(alienVector[i], shipMissileVector[j])) {
 					// Delete  alien
 					delete alienVector[i];
@@ -142,7 +174,7 @@ int main() {
 		}
 
 		// Moves alien missiles and detects if the player ship was hit
-		for (int i = (int)alienMissileVector.size() - 1; i >= 0; --i) {
+		for (int i = static_cast<int>(alienMissileVector.size()) - 1; i >= 0; --i) {
 			alienMissileVector[i]->move(ZERO, MISSILE_DISTANCE); // Move missiles
 
 			// Delete missiles if they reach the edge of the window
@@ -151,15 +183,9 @@ int main() {
 				alienMissileVector.erase(alienMissileVector.begin() + i);
 			}
 
-			// End the game if an alien missile hits the ship
+			// Lose a life if an alien missile hits the ship
 			if (collision(ship, alienMissileVector[i])) {
-					delete ship;
-
-					delete alienMissileVector[i];
-					alienMissileVector.erase(alienMissileVector.begin() + i);
-
-					cout << "You lose!" << endl;
-					exit(0);
+				ship->loseLife();
 			}
 		}
 

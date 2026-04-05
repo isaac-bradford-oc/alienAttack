@@ -2,13 +2,14 @@
 
 class Ship : public Pixie {
 private:
-	int lives; // Player lives
+	unsigned int lives; // Player lives
 public:
 	// Member functions
-	void setLives(int lives) { this->lives = lives; } // Sets player lives
+	void setLives(unsigned int lives) { this->lives = lives; } // Sets player lives
 	int getLives() { return lives; } // Gets player lives
+	void loseLife();
 
 	// Constructors
-	Ship(int lives); // Default constructor
+	Ship(unsigned int lives); // Default constructor
 	~Ship(); // Destructor
 };
