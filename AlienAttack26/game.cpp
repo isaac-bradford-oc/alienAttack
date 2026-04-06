@@ -28,7 +28,6 @@ int main() {
 	int remainingLives = MAX_PLAYER_LIVES;
 
 	// Entity vectors
-	vector<Pixie*> alienVector = {};
 	vector<Pixie*> shipMissileVector = {};
 	vector<Pixie*> alienMissileVector = {};
 	vector<Pixie*> lifeIconVector = {};
@@ -36,7 +35,7 @@ int main() {
 	// Initial alien setup
 	bool isGoingLeft = true;
 	bool isChangingDirection = false;
-	spawnAlienWave(alienVector, LEVEL_ONE_ALIENS);
+	AlienArmy alienArmy(LEVEL_ONE_ALIENS);
 
 	// Background setup (scaled to window)
 	Pixie* background = new Pixie(BACKGROUND_TEXTURE_FILE, ZERO, ZERO, BACKGROUND_PIXIE);
@@ -47,7 +46,7 @@ int main() {
 	// Start screen
 	background->draw(window); // Draw background
 	ship->draw(window); // Draw ship
-	for (Pixie* alien : alienVector) alien->draw(window); // Draw aliens from vector
+	alienArmy.draw(window); // Draw alien army
 	window.display(); // Push window
 
 	// Wait to start until first input
@@ -96,7 +95,7 @@ int main() {
 			clock_t initialTime = clock() / CLOCKS_PER_SEC;
 			while (((clock() / CLOCKS_PER_SEC) - ONE_SECOND) < initialTime) {}
 
-			spawnAlienWave(alienVector);
+			alienArmy.spawnWave();
 			alienMissileVector.clear();
 
 			ship->setPosition(SHIP_X, SHIP_Y);
@@ -119,7 +118,7 @@ int main() {
 		}
 
 		// End the game if player defeats all aliens
-		if (alienVector.empty()) {
+		if (alienArmy.empty()) {
 			cout << "You win!" << endl;
 			window.close();
 		}
@@ -215,9 +214,9 @@ int main() {
 		// Draw all missile and alien elements from vectors
 		for (Pixie* missile : alienMissileVector) missile->draw(window);
 		for (Pixie* missile : shipMissileVector) missile->draw(window);
-		for (Pixie* alien : alienVector) alien->draw(window);
 		for (Pixie* lifeIcon : lifeIconVector) lifeIcon->draw(window);
 		
+		alienArmy.draw(window);
 		ship->draw(window); // Draw ship
 		window.display();
 	}

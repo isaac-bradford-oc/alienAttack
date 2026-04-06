@@ -20,6 +20,7 @@ using namespace sf;
 
 #include "Pixie.h"
 #include "Ship.h"
+#include "AlienArmy.h"
 
 // Constants for the game 
 const string GAME_NAME = "Aliens!";

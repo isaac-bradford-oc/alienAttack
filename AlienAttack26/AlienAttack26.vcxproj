@@ -131,11 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlienArmy.h" />
     <ClInclude Include="gameHeader.h" />
     <ClInclude Include="Pixie.h" />
     <ClInclude Include="Ship.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlienArmy.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameFunctions.cpp" />
     <ClCompile Include="Pixie.cpp" />
