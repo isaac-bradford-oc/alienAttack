@@ -8,6 +8,21 @@
 
 #include "gameHeader.h"
 
+/*
+* name
+* purpose
+* input if any
+* return value
+*/
+
+
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 int main() {
 	// Initialize clock at zero
 	clock_t previousClock = 0;

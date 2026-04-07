@@ -9,6 +9,13 @@
 #include "gameHeader.h"
 
 // Move ship based on which key is pressed
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void Ship::move()
 {
 	// If left key is pressed
@@ -26,6 +33,13 @@ void Ship::move()
 }
 
 // Checks for ship collision with missile
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 bool Ship::collision(Pixie* missile) {
 	bool collision = false;
 
@@ -46,12 +60,26 @@ bool Ship::collision(Pixie* missile) {
 }
 
 // Decrement lives and reset ship position
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void Ship::loseLife() {
 	--lives;
 	setPosition(SHIP_OOB, SHIP_OOB);
 }
 
 // Default constructor
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 Ship::Ship(unsigned int lives) {
 	setLives(lives);
 	setTextureSourceFile(SHIP_TEXTURE_FILE);

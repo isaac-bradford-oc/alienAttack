@@ -9,6 +9,13 @@
 #include "gameHeader.h"
 
 // Draws the Pixie's sprite on screen 
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void MissileContainer::draw(RenderWindow& window) {
 	for (Pixie* missile : missileVector) { 
 		missile->draw(window);
@@ -16,6 +23,13 @@ void MissileContainer::draw(RenderWindow& window) {
 }
 
 // Moves missiles by passed x and y values
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void MissileContainer::move(float x, float y) {
 	for (Pixie* missile : missileVector) {
 		missile->move(x, y);
@@ -23,6 +37,13 @@ void MissileContainer::move(float x, float y) {
 }
 
 // Create a new missile object
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void MissileContainer::createMissile(Pixie* object) {
 	// Create missile
 	Pixie* missile = new Pixie(MISSILE_TEXTURE_FILE, ZERO, ZERO, MISSILE_PIXIE);
@@ -37,6 +58,13 @@ void MissileContainer::createMissile(Pixie* object) {
 }
 
 // Fires missile if space is pressed
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void MissileContainer::fire(Pixie* object) {
 	if (Keyboard::isKeyPressed(Keyboard::Key::Space) // Condition continued on next line
 	&& (this->getNumMissiles() < MAX_PLAYER_MISSILES)) { // If space is pressed and missile limit not reached
@@ -45,6 +73,13 @@ void MissileContainer::fire(Pixie* object) {
 }
 
 // Check for collion between missile and victim
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 bool MissileContainer::collision(Ship* ship) {
 	bool collision = false;
 
@@ -58,6 +93,13 @@ bool MissileContainer::collision(Ship* ship) {
 }
 
 // Check for collion between missile and victim
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 bool MissileContainer::collision(AlienArmy* alienArmy) {
 	bool collision = false;
 
@@ -71,6 +113,13 @@ bool MissileContainer::collision(AlienArmy* alienArmy) {
 }
 
 // Delete and erase any hit missiles
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void MissileContainer::eraseHitMissiles() {
 	// Iterate through vector
 	for (auto iter = missileVector.begin(); iter != missileVector.end();) {
@@ -86,6 +135,13 @@ void MissileContainer::eraseHitMissiles() {
 }
 
 // Clear all missiles from vector
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void MissileContainer::eraseOffScreenMissiles() {
 	// Iterate through vector
 	for (auto iter = missileVector.begin(); iter < missileVector.end();) {
@@ -101,11 +157,25 @@ void MissileContainer::eraseOffScreenMissiles() {
 }
 
 // Constructor initializes vector as empty
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 MissileContainer::MissileContainer() {
 	missileVector = {};
 }
 
 // Destructor
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 MissileContainer::~MissileContainer() {
 	for (Pixie* missile : missileVector) {
 		delete missile;

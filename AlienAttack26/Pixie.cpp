@@ -11,6 +11,13 @@
 int Pixie::nextPixieID = 0; // Initialize shared ID variable
 
 // Center one object on another object
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 float Pixie::centerX(Pixie& objectToCenter) {
 	float callerObjectCenter = getX() + mySprite->getLocalBounds().getCenter().x;
 	float passedObjectCenter = objectToCenter.getSprite()->getLocalBounds().getCenter().x;
@@ -19,6 +26,13 @@ float Pixie::centerX(Pixie& objectToCenter) {
 }
 
 // Load Pixie's texture from file
+/*
+* Name: main 
+* Arg(s): ()
+* Returns: int 
+*
+* Main function
+*/
 void Pixie::setTextureSourceFile(string filename) {
 	// Allocate memory for texture
 	myTexture = new Texture();
@@ -30,6 +44,13 @@ void Pixie::setTextureSourceFile(string filename) {
 }
 
 // Default constructor
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 Pixie::Pixie() {
 	setTextureSourceFile();
 	setSprite();
@@ -39,6 +60,13 @@ Pixie::Pixie() {
 }
 
 // Loads Pixie's texture from file, sets sprite position, and assigns pixie type
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 Pixie::Pixie(string filename, float x, float y, int type) {
 	setTextureSourceFile(filename);
 
@@ -51,6 +79,13 @@ Pixie::Pixie(string filename, float x, float y, int type) {
 }
 
 // Destructor
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 Pixie::~Pixie() {
 	delete myTexture;
 	delete mySprite;

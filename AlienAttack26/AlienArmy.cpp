@@ -9,6 +9,13 @@
 #include "gameHeader.h"
 
 // Draws the Pixie's sprite on screen 
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void AlienArmy::draw(RenderWindow& window) {
 	for (Pixie* alien : alienVector) { 
 		alien->draw(window);
@@ -16,6 +23,13 @@ void AlienArmy::draw(RenderWindow& window) {
 }
 
 // Moves aliens by passed x and y values
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void AlienArmy::move(float x, float y) {
 	for (Pixie* alien : alienVector) {
 		alien->move(x, y);
@@ -23,12 +37,26 @@ void AlienArmy::move(float x, float y) {
 }
 
 // Create a new alien object
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 Pixie* AlienArmy::createAlien(float alienStartingX, float alienStartingY) {
 	Pixie* alien = new Pixie(ALIEN_TEXTURE_FILE, alienStartingX, alienStartingY, ALIEN_PIXIE);
 	return alien;
 }
 
 // Checks if any alien in army is below passed position
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 bool AlienArmy::below(float position) {
 	bool isBelow = false;
 	for (Pixie* alien : alienVector) {
@@ -40,12 +68,26 @@ bool AlienArmy::below(float position) {
 }
 
 // Returns a random alien from vector
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 Pixie* AlienArmy::getRandomAlien() {
 	int randomAlienIdx = rand() % getNumAliens(); // Chooses random alien
 	Pixie* randomAlien = alienVector[randomAlienIdx];
 	return randomAlien;
 }
 
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 bool AlienArmy::collision(Pixie* missile) {
 	bool collision = false;
 
@@ -67,6 +109,13 @@ bool AlienArmy::collision(Pixie* missile) {
 	return collision;
 }
 
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 // Delete and erase any hit aliens
 void AlienArmy::eraseHitAliens() {
 	// Iterate through vector
@@ -83,6 +132,13 @@ void AlienArmy::eraseHitAliens() {
 }
 
 // Moves aliens and changes their direction if one hits a border
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void AlienArmy::move(bool& isGoingLeft, bool& isChangingDirection) {
 	for (Pixie* alien : alienVector) {
 		// Gets width of alien sprite
@@ -111,6 +167,13 @@ void AlienArmy::move(bool& isGoingLeft, bool& isChangingDirection) {
 }
 
 // Spawn an alien wave based on passed quantity
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void AlienArmy::spawnWave(unsigned int numAliens) {
 	// Calculate rows, columns, and starting coordinates
 	const int rows = static_cast<int>(floor(sqrt(numAliens)));
@@ -143,6 +206,13 @@ void AlienArmy::spawnWave(unsigned int numAliens) {
 }
 
 // Spawns alien wave based on size of passed vector
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 void AlienArmy::spawnWave() {
 	// Current size of vector
 	unsigned int alienVectorSize = static_cast<unsigned int>(alienVector.size());
@@ -155,11 +225,25 @@ void AlienArmy::spawnWave() {
 }
 
 // Constructor spawns wave based on passed number of aliens
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 AlienArmy::AlienArmy(unsigned int numAliens) {
 	spawnWave(numAliens);
 }
 
 // Destructor
+/*
+ * Name: main 
+ * Arg(s): ()
+ * Returns: int 
+ *
+ * Main function
+ */
 AlienArmy::~AlienArmy() {
 	for (Pixie* alien : alienVector) {
 		delete alien;
