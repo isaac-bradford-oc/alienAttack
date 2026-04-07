@@ -8,13 +8,12 @@
 
 #include "gameHeader.h"
 
-// Move ship based on which key is pressed
 /*
- * Name: main 
+ * Name: Ship::move
  * Arg(s): ()
- * Returns: int 
+ * Returns: void
  *
- * Main function
+ * Move ship based on which key is pressed
  */
 void Ship::move()
 {
@@ -32,13 +31,12 @@ void Ship::move()
 	}
 }
 
-// Checks for ship collision with missile
 /*
- * Name: main 
- * Arg(s): ()
- * Returns: int 
+ * Name: Ship::collision
+ * Arg(s): Pixie* missile
+ * Returns: bool
  *
- * Main function
+ * Checks for ship collision with missile
  */
 bool Ship::collision(Pixie* missile) {
 	bool collision = false;
@@ -59,26 +57,24 @@ bool Ship::collision(Pixie* missile) {
 	return collision;
 }
 
-// Decrement lives and reset ship position
 /*
- * Name: main 
+ * Name: Ship::loseLife
  * Arg(s): ()
- * Returns: int 
+ * Returns: void
  *
- * Main function
+ * Decrement lives and reset ship position
  */
 void Ship::loseLife() {
 	--lives;
 	setPosition(SHIP_OOB, SHIP_OOB);
 }
 
-// Default constructor
 /*
- * Name: main 
- * Arg(s): ()
- * Returns: int 
+ * Name: Ship::Ship
+ * Arg(s): unsigned int lives
+ * Returns: N/A
  *
- * Main function
+ * Default constructor
  */
 Ship::Ship(unsigned int lives) {
 	setLives(lives);

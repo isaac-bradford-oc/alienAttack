@@ -8,23 +8,21 @@
 
 #include "gameHeader.h"
 
-// Returns clock time as seconds
 /*
- * Name: main 
+ * Name: clocksPerSecond
  * Arg(s): ()
- * Returns: int 
+ * Returns: clock_t
  *
- * Main function
+ * Returns clock time as seconds
  */
 clock_t clocksPerSecond() { return clock() / CLOCKS_PER_SEC; }
 
-// Returns randomized seconds offset based on passed max offset
 /*
- * Name: main 
- * Arg(s): ()
- * Returns: int 
+ * Name: alienMissileSecondsOffset
+ * Arg(s): unsigned int seconds
+ * Returns: int
  *
- * Main function
+ * Returns randomized seconds offset based on passed max offset
  */
 int alienMissileSecondsOffset(unsigned int seconds) {
 	unsigned int centiseconds = seconds * SECONDS_TO_CENTISECONDS_FACTOR; // Convert to centiseconds to use with rand()

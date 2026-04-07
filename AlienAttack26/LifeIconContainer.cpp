@@ -8,13 +8,12 @@
 
 #include "gameHeader.h"
 
-// Draws life icons
 /*
- * Name: main 
- * Arg(s): ()
- * Returns: int 
+ * Name: LifeIconContainer::draw
+ * Arg(s): RenderWindow& window
+ * Returns: void
  *
- * Main function
+ * Draws life icons
  */
 void LifeIconContainer::draw(RenderWindow& window) {
 	for (Pixie* lifeIcon : lifeIconVector) {
@@ -22,26 +21,24 @@ void LifeIconContainer::draw(RenderWindow& window) {
 	}
 }
 
-// Remove life icon from vector and decrement lives
 /*
- * Name: main 
+ * Name: LifeIconContainer::loseLife
  * Arg(s): ()
- * Returns: int 
+ * Returns: void
  *
- * Main function
+ * Remove life icon from vector and decrement lives
  */
 void LifeIconContainer::loseLife() {
 	lifeIconVector.pop_back();
 	--lives;
 }
 
-// Default constructor
 /*
- * Name: main 
- * Arg(s): ()
- * Returns: int 
+ * Name: LifeIconContainer::LifeIconContainer
+ * Arg(s): unsigned int maxLives
+ * Returns: N/A
  *
- * Main function
+ * Default constructor
  */
 LifeIconContainer::LifeIconContainer(unsigned int maxLives) {
 	lives = maxLives;
@@ -55,13 +52,12 @@ LifeIconContainer::LifeIconContainer(unsigned int maxLives) {
 	}
 }
 
-// Destructor
 /*
- * Name: main 
+ * Name: LifeIconContainer::~LifeIconContainer
  * Arg(s): ()
- * Returns: int 
+ * Returns: N/A
  *
- * Main function
+ * Destructor
  */
 LifeIconContainer::~LifeIconContainer() {
 	for (Pixie* lifeIcon : lifeIconVector) {

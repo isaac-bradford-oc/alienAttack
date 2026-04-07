@@ -9,14 +9,6 @@
 #include "gameHeader.h"
 
 /*
-* name
-* purpose
-* input if any
-* return value
-*/
-
-
-/*
  * Name: main 
  * Arg(s): ()
  * Returns: int 
@@ -101,7 +93,8 @@ int main() {
 		if (ship->getLives() < remainingLives) {
 			// End game if out of lives
 			if (ship->getLives() == 0u) {
-				cout << GAME_LOSE_MESSAGE << endl;
+				cout << GAME_LOSE_MESSAGE << endl; // Output lose message
+				cout << gameScore << endl; // Output game score
 				window.close();
 			}
 
@@ -128,7 +121,8 @@ int main() {
 
 		// End the game if player defeats all aliens
 		if (alienArmy->empty()) {
-			cout << GAME_WIN_MESSAGE << endl;
+			cout << GAME_WIN_MESSAGE << endl; // Output win message
+			cout << gameScore << endl; // Output game score
 			window.close();
 		}
 
@@ -206,9 +200,6 @@ int main() {
 	delete alienMissiles; // Delete alien missiles
 	delete shipMissiles; // Delete player missiles
 	delete lifeIcons; // Delete life icons
-
-	// Output game score
-	cout << GAME_SCORE_MESSAGE << gameScore << endl;
 
 	return 0;
 }
