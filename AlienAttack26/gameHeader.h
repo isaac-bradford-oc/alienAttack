@@ -9,18 +9,14 @@
 // Includes
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <iostream>
-#include <vector>
 #include <cstdlib>
+#include <string>
+#include <vector>
 #include <random>
 
 using namespace std;
 using namespace sf;
-
-#include "Pixie.h"
-#include "Ship.h"
-#include "AlienArmy.h"
 
 // Constants for the game 
 const string GAME_NAME = "Aliens!";
@@ -29,10 +25,14 @@ const string ALIEN_TEXTURE_FILE = "alien.bmp";
 const string MISSILE_TEXTURE_FILE = "missile.bmp";
 const string BACKGROUND_TEXTURE_FILE = "stars.jpg";
 
+const string GAME_WIN_MESSAGE = "You win!";
+const string GAME_LOSE_MESSAGE = "You lose!";
+const string GAME_SCORE_MESSAGE = "Your score was: ";
+
 const int UNDEFINED_PIXIE = 0; // Undefined pixie type
-const int PLAYER_SHIP_PIXIE = 1; // Ship pixie type
-const int PLAYER_MISSILE_PIXIE = 2; // Missile pixie type
-const int ALIEN_PIXIE = 3; // Alien pixie type
+const int SHIP_PIXIE = 1; // Ship pixie type
+const int ALIEN_PIXIE = 2; // Alien pixie type
+const int MISSILE_PIXIE = 3; // Missile pixie type
 const int BACKGROUND_PIXIE = 4; // Background pixie type
 const int LIFE_ICON_PIXIE = 5; // Player lives icon
 
@@ -66,14 +66,15 @@ const unsigned int ALIEN_X_OFFSET = 80u; // Distance between alien rows
 const unsigned int ALIEN_Y_OFFSET = 60u; // Distance between alien columns
 const unsigned int ALIEN_SCORE = 250u; // Score for eliminating an alien
 const unsigned int LEVEL_ONE_ALIENS = 19u; // Amount of aliens to spawn in level one
-const unsigned int ALIEN_MISSILE_MAX_TIME_OFFSET = 1u; // Max time to offset firing of alien missile
+const unsigned int ALIEN_MISSILE_MAX_SECONDS_OFFSET = 1u; // Max time to offset firing of alien missile
 
 // Game Functions
-Pixie* createAlien(float alienX, float alienY); // Creates a new alien object
-Pixie* createMissile(); // Creates a new missile object
-void spawnAlienWave(std::vector<Pixie*>& alienVector, unsigned int numAliens); // Spawns an alien wave based on passed quantity 
-void spawnAlienWave(vector<Pixie*>& alienVector); // Spawns alien wave based on size of passed vector
-void moveShip(Pixie& ship); // Moves ship based on which key is pressed
-void moveAlien(Pixie* alien, bool& isGoingLeft, bool& isChangingDirection); // Moves alien and changes direction if it hits a border
-bool collision(Pixie* victimOfMissile, Pixie* missile); // Checks for collision between two objects
+clock_t clocksPerSecond(); // Returns clock time as seconds
 int alienMissileSecondsOffset(unsigned int seconds); // Returns randomized seconds offset based on passed max offset
+
+// Include classes
+#include "Pixie.h"
+#include "Ship.h"
+#include "AlienArmy.h"
+#include "MissileContainer.h"
+#include "LifeIconContainer.h"

@@ -8,6 +8,43 @@
 
 #include "gameHeader.h"
 
+// Move ship based on which key is pressed
+void Ship::move()
+{
+	// If left key is pressed
+	if (Keyboard::isKeyPressed(Keyboard::Key::Left))
+	{
+		// Move ship left
+		Pixie::move(-SHIP_DISTANCE, ZERO);
+	}
+	// If right key is pressed
+	else if (Keyboard::isKeyPressed(Keyboard::Key::Right))
+	{
+		// Move ship right
+		Pixie::move(SHIP_DISTANCE, ZERO);
+	}
+}
+
+// Checks for ship collision with missile
+bool Ship::collision(Pixie* missile) {
+	bool collision = false;
+
+	// Missile and victim bounds 
+	FloatRect missileBounds = missile->getSprite()->getGlobalBounds();
+	FloatRect shipBounds = this->getSprite()->getGlobalBounds();
+
+	// If missile hits victim, return true
+	if (missileBounds.findIntersection(shipBounds)) {
+		collision = true;
+
+		// Flag missile and victim as "hit"
+		missile->hit();
+		this->hit();
+	}
+
+	return collision;
+}
+
 // Decrement lives and reset ship position
 void Ship::loseLife() {
 	--lives;
@@ -22,5 +59,5 @@ Ship::Ship(unsigned int lives) {
 	setScale(SCALE, SCALE);
 	setPosition(SHIP_X, SHIP_Y);
 	setID();
-	setType(PLAYER_SHIP_PIXIE);
+	setType(SHIP_PIXIE);
 }

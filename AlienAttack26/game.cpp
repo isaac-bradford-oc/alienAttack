@@ -25,17 +25,17 @@ int main() {
 
 	// Initialize Player Ship
 	Ship* ship = new Ship(MAX_PLAYER_LIVES);
-	int remainingLives = MAX_PLAYER_LIVES;
+	unsigned int remainingLives = MAX_PLAYER_LIVES;
 
-	// Entity vectors
-	vector<Pixie*> shipMissileVector = {};
-	vector<Pixie*> alienMissileVector = {};
-	vector<Pixie*> lifeIconVector = {};
+	// Entity containers
+	MissileContainer* shipMissiles = new MissileContainer();
+	MissileContainer* alienMissiles = new MissileContainer();
+	LifeIconContainer* lifeIcons = new LifeIconContainer(MAX_PLAYER_LIVES);
 
 	// Initial alien setup
 	bool isGoingLeft = true;
 	bool isChangingDirection = false;
-	AlienArmy alienArmy(LEVEL_ONE_ALIENS);
+	AlienArmy* alienArmy = new AlienArmy(LEVEL_ONE_ALIENS);
 
 	// Background setup (scaled to window)
 	Pixie* background = new Pixie(BACKGROUND_TEXTURE_FILE, ZERO, ZERO, BACKGROUND_PIXIE);
@@ -46,7 +46,7 @@ int main() {
 	// Start screen
 	background->draw(window); // Draw background
 	ship->draw(window); // Draw ship
-	alienArmy.draw(window); // Draw alien army
+	alienArmy->draw(window); // Draw alien army
 	window.display(); // Push window
 
 	// Wait to start until first input
@@ -56,7 +56,8 @@ int main() {
 		}
 	}
 
-	while (window.isOpen())	{
+	// While the game is running
+	while (window.isOpen()) {
 
 		// --- 1. Event Handling ---
 		while (const optional event = window.pollEvent()) {
@@ -75,161 +76,124 @@ int main() {
 						}
 					}
 				}
-				// Shoot missile
-				if (keyPressed->scancode == Keyboard::Scancode::Space
-					&& static_cast<int>(shipMissileVector.size()) < MAX_PLAYER_MISSILES) { // If space is pressed and missile limit not reached
-					Pixie* missile = createMissile(); // Create missile
-					missile->setPosition(ship->centerX(*missile), ship->getY()); // Center missile on ship
-					shipMissileVector.push_back(missile); // Add missile to the ship missile vector
-				}
+				// Fire missiles if space key is pressed
+				shipMissiles->fire(ship);
 			}
 		}
 
 		// --- 2. Update Phase (Logic) ---
+		// If player lost a life, lose if out of lives, otherwise, pause the game and reset entity positions
 		if (ship->getLives() < remainingLives) {
-			if (ship->getLives() == 0) {
-				cout << "You lose!" << endl;
+			// End game if out of lives
+			if (ship->getLives() == 0u) {
+				cout << GAME_LOSE_MESSAGE << endl;
 				window.close();
 			}
 
-			clock_t initialTime = clock() / CLOCKS_PER_SEC;
-			while (((clock() / CLOCKS_PER_SEC) - ONE_SECOND) < initialTime) {}
+			// Pause game for one second
+			clock_t initialTime = clocksPerSecond();
+			while ((clocksPerSecond() - ONE_SECOND) < initialTime) {}
 
-			alienArmy.spawnWave();
-			alienMissileVector.clear();
+			// Reset alien army position and clear missiles
+			alienArmy->spawnWave();
+			alienMissiles->clear();
 
+			// Reset ship position, clear missiles, and decrement lives variable
 			ship->setPosition(SHIP_X, SHIP_Y);
-			--remainingLives;
+			shipMissiles->clear();
+			remainingLives = ship->getLives();
 		}
 
+		// Move ship
+		ship->move();
 
-		moveShip(*ship);
-
-		// Update missiles (move and check bounds)
-		for (int i = static_cast<int>(shipMissileVector.size()) - 1; i >= 0; --i) {
-			// Move missiles
-			shipMissileVector[i]->move(ZERO, -MISSILE_DISTANCE);
-
-			// If missile reaches edge of window, erase it
-			if (shipMissileVector[i]->getY() < ZERO) {
-				delete shipMissileVector[i];
-				shipMissileVector.erase(shipMissileVector.begin() + i);
-			}
-		}
+		// Move player missiles and erase them if they are off-screen
+		shipMissiles->move(ZERO, -MISSILE_DISTANCE);
+		shipMissiles->eraseOffScreenMissiles();
 
 		// End the game if player defeats all aliens
-		if (alienArmy.empty()) {
-			cout << "You win!" << endl;
+		if (alienArmy->empty()) {
+			cout << GAME_WIN_MESSAGE << endl;
 			window.close();
 		}
 
-		// Move alien army and check if any aliens are hit
-		for (int i = static_cast<int>(alienVector.size()) - 1; i >= 0; --i) {
-			moveAlien(alienVector[i], isGoingLeft, isChangingDirection);
+		// Move alien army
+		alienArmy->move(isGoingLeft, isChangingDirection);
 
-			// Lose a life if an alien reaches below the player
-			if (alienVector[i]->getY() > SHIP_Y) {
-				ship->loseLife();
-				break;
-			}
+		// Lose a life if aliens reach player
+		if (alienArmy->below(SHIP_Y)) {
+			ship->loseLife();
+		}
 
-			// Check if any aliens are hit
-			for (int j = static_cast<int>(shipMissileVector.size()) - 1; j >= 0; --j) {
-				if (collision(alienVector[i], shipMissileVector[j])) {
-					// Delete  alien
-					delete alienVector[i];
-					alienVector.erase(alienVector.begin() + i);
+		// Check if any aliens are hit
+		if (shipMissiles->collision(alienArmy)) {
+			// Erase hit aliens
+			alienArmy->eraseHitAliens();
 
-					// Delete missile
-					delete shipMissileVector[j];
-					shipMissileVector.erase(shipMissileVector.begin() + j);
+			// Erase hit missiles
+			shipMissiles->eraseHitMissiles();
 
-					// Increase game score
-					gameScore += ALIEN_SCORE;
-
-					break; // Alien destroyed, stop checking missiles for it
-				}
-			}
+			// Increment game score
+			gameScore += ALIEN_SCORE;
 		}
 
 		// Move aliens down if they are changing direction
-		if (isChangingDirection){
-			for (Pixie* alien : alienVector) {
-				alien->move(ZERO, ALIEN_VERTICAL_DISTANCE);
-			}
+		if (isChangingDirection) {
+			alienArmy->move(ZERO, ALIEN_VERTICAL_DISTANCE);
 			isChangingDirection = false;
 		}
 
 		// Periodically have random alien fire missile
-		currentClock = clock() / CLOCKS_PER_SEC; // Converts cpu clock unit to seconds
-		if (((currentClock - ONE_SECOND) - alienMissileSecondsOffset(ALIEN_MISSILE_MAX_TIME_OFFSET)) >= previousClock) { // If >= 1 + offset seconds has passed since last missile
-			int randomAlienIdx = rand() % alienVector.size(); // Chooses random alien
+		currentClock = clocksPerSecond(); // Converts cpu clock unit to seconds
+		if (((currentClock - ONE_SECOND) - alienMissileSecondsOffset(ALIEN_MISSILE_MAX_SECONDS_OFFSET)) >= previousClock) { // If >= 1 + offset seconds has passed since last missile
+			// Get a random alien
+			Pixie* randomAlien = alienArmy->getRandomAlien();
 
 			// Create the missile
-			Pixie* missile = createMissile();
-
-			float missileX = alienVector[randomAlienIdx]->centerX(*missile);
-			float missileY = alienVector[randomAlienIdx]->getY();
-			missile->setPosition(missileX, missileY);
-
-			alienMissileVector.push_back(missile);
+			alienMissiles->createMissile(randomAlien);
 
 			// Prepare clock for next loop
 			previousClock = currentClock;
 		}
 
-		// Moves alien missiles and detects if the player ship was hit
-		for (int i = static_cast<int>(alienMissileVector.size()) - 1; i >= 0; --i) {
-			alienMissileVector[i]->move(ZERO, MISSILE_DISTANCE); // Move missiles
+		// Move alien missiles and erase them if they are off-screen
+		alienMissiles->move(ZERO, MISSILE_DISTANCE);
+		alienMissiles->eraseOffScreenMissiles();
 
-			// Delete missiles if they reach the edge of the window
-			if (alienMissileVector[i]->getY() < ZERO) {
-				delete alienMissileVector[i];
-				alienMissileVector.erase(alienMissileVector.begin() + i);
-			}
-
-			// Lose a life if an alien missile hits the ship
-			if (collision(ship, alienMissileVector[i])) {
-				ship->loseLife();
-			}
+		// If the player gets hit, lose a life
+		if (alienMissiles->collision(ship)) {
+			ship->loseLife();
 		}
 
-		// Add life icons
-		while (static_cast<int>(lifeIconVector.size()) < remainingLives) {
-			float iconX = static_cast<float>(WINDOW_WIDTH) - ((lifeIconVector.size() + 1) * LIFE_ICON_OFFSET); // Start at right border and place each alien further left
-			float iconY = WINDOW_HEIGHT - LIFE_ICON_OFFSET; // Bottom border minus offset
-			Pixie* lifeIcon = new Pixie(SHIP_TEXTURE_FILE, iconX, iconY, LIFE_ICON_PIXIE); // Create life icon
-			lifeIconVector.push_back(lifeIcon); // Push icon to vector
-		}
-		
-		// Remove life icons
-		while (static_cast<int>(lifeIconVector.size()) > remainingLives) {
-			lifeIconVector.pop_back();
+		// Remove life icon if player died
+		if (lifeIcons->getLives() > ship->getLives()) {
+			lifeIcons->loseLife();
 		}
 
 		// --- 3. Draw Phase (Rendering) ---
-		window.clear();
+		window.clear(); // Clear the canvas
 		background->draw(window); // Draw background
 		
-		// Draw all missile and alien elements from vectors
-		for (Pixie* missile : alienMissileVector) missile->draw(window);
-		for (Pixie* missile : shipMissileVector) missile->draw(window);
-		for (Pixie* lifeIcon : lifeIconVector) lifeIcon->draw(window);
+		// Draw all missile and life icon elements from vectors
+		alienMissiles->draw(window); // Draw alien missiles
+		shipMissiles->draw(window); // Draw player missiles
+		lifeIcons->draw(window); // Draw life icons
 		
-		alienArmy.draw(window);
+		alienArmy->draw(window); // Draw alien army
 		ship->draw(window); // Draw ship
-		window.display();
+		window.display(); // Push window
 	}
 
 	// Cleanup remaining memory
-	delete ship;
-	delete background;
-	for (Pixie* missile : alienMissileVector) delete missile;
-	for (Pixie* missile : shipMissileVector) delete missile;
-	for (Pixie* alien : alienVector) delete alien;
+	delete ship; // Delete player ship
+	delete alienArmy; // Delete alien army
+	delete background; // Delete background
+	delete alienMissiles; // Delete alien missiles
+	delete shipMissiles; // Delete player missiles
+	delete lifeIcons; // Delete life icons
 
 	// Output game score
-	cout << "Your score was: " << gameScore << endl;
+	cout << GAME_SCORE_MESSAGE << gameScore << endl;
 
 	return 0;
 }

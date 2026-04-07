@@ -30,6 +30,12 @@
     <ClCompile Include="AlienArmy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LifeIconContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MissileContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameHeader.h">
@@ -42,6 +48,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AlienArmy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LifeIconContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MissileContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

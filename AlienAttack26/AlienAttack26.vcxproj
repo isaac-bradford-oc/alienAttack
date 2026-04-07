@@ -133,6 +133,8 @@
   <ItemGroup>
     <ClInclude Include="AlienArmy.h" />
     <ClInclude Include="gameHeader.h" />
+    <ClInclude Include="LifeIconContainer.h" />
+    <ClInclude Include="MissileContainer.h" />
     <ClInclude Include="Pixie.h" />
     <ClInclude Include="Ship.h" />
   </ItemGroup>
@@ -140,6 +142,8 @@
     <ClCompile Include="AlienArmy.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameFunctions.cpp" />
+    <ClCompile Include="LifeIconContainer.cpp" />
+    <ClCompile Include="MissileContainer.cpp" />
     <ClCompile Include="Pixie.cpp" />
     <ClCompile Include="Ship.cpp" />
   </ItemGroup>

@@ -14,6 +14,7 @@ int Pixie::nextPixieID = 0; // Initialize shared ID variable
 float Pixie::centerX(Pixie& objectToCenter) {
 	float callerObjectCenter = getX() + mySprite->getLocalBounds().getCenter().x;
 	float passedObjectCenter = objectToCenter.getSprite()->getLocalBounds().getCenter().x;
+
 	return callerObjectCenter + passedObjectCenter;
 }
 
@@ -34,6 +35,7 @@ Pixie::Pixie() {
 	setSprite();
 	setID();
 	setType(UNDEFINED_PIXIE);
+	hitStatus = false;
 }
 
 // Loads Pixie's texture from file, sets sprite position, and assigns pixie type
@@ -45,6 +47,7 @@ Pixie::Pixie(string filename, float x, float y, int type) {
 
 	setID();
 	setType(type);
+	hitStatus = false;
 }
 
 // Destructor
